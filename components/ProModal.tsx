@@ -13,6 +13,7 @@ import { Button } from "./ui/button";
 import { useToast } from "./ui/use-toast";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { CheckIcon } from "lucide-react";
 
 function ProModal() {
   const proModal = useProModal();
@@ -51,9 +52,25 @@ function ProModal() {
       <DialogContent>
         <DialogHeader className="space-y-4">
           <DialogTitle className="text-center">Upgrade to Pro</DialogTitle>
-          <DialogDescription className="text-center space-y-2">
-            Create <span className="text-sky-500 font-medium">Custom AI</span>{" "}
-            Companions
+          <DialogDescription className="mx-auto space-y-2">
+            <div className="mb-4 text-center">
+              {"(Don't worry it's free for this demo)"}
+            </div>
+            <div className="flex">
+              <CheckIcon size={20} className="mr-2 text-sky-500" />
+              <div>
+                Create a{" "}
+                <span className="text-sky-500 font-medium">Custom AI</span>{" "}
+                Companion
+              </div>
+            </div>
+            <div className="flex">
+              <CheckIcon size={20} className="mr-2 text-sky-500" />
+              <div>
+                Increase your{" "}
+                <span className="text-sky-500 font-medium">Chat Limit</span>
+              </div>
+            </div>
           </DialogDescription>
         </DialogHeader>
         <Separator />

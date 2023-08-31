@@ -37,7 +37,11 @@ function ChatMessage({ role, content, isLoading, src }: ChatMessageProps) {
       )}
     >
       {role !== "user" && src && <BotAvatar src={src} />}
-      <div className="rounded-md px-4 py-2 max-w-sm text-sm bg-primary/10">
+      <div
+        className={`rounded-md px-4 py-2 max-w-sm text-sm bg-primary/10 ${
+          role === "user" && "ml-7"
+        }`}
+      >
         {isLoading ? (
           <BeatLoader size={5} color={theme === "light" ? "black" : "white"} />
         ) : (

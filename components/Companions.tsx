@@ -30,7 +30,7 @@ function Companions({ data }: CompanionsProps) {
           key={item.id}
           className="bg-primary/10 rounded-xl cursor-pointer hover:opacity-75 transition border-0"
         >
-          <Link href={`/chat/${item.id}`}>
+          <Link href={`/chat/${item.id}`} className="flex flex-col h-full">
             <CardHeader className="flex items-center justify-center text-center text-muted-foreground">
               <div className="relative w-32 h-32">
                 <Image
@@ -43,13 +43,15 @@ function Companions({ data }: CompanionsProps) {
               <p className="font-bold">{item.name}</p>
               <p className="text-xs">{item.description}</p>
             </CardHeader>
-            <CardFooter className="flex items-center justify-between text-xs text-muted-foreground">
-              <p className="lowercase">@{item.userName}</p>
-              <div className="flex items-center">
-                <MessagesSquare className="w-3 h-3 mr-1" />
-                {item._count.messages}
-              </div>
-            </CardFooter>
+            <div className="flex flex-1">
+              <CardFooter className="flex mt-auto w-full items-center justify-between text-xs text-muted-foreground">
+                <p className="lowercase">@{item.userName}</p>
+                <div className="flex items-center">
+                  <MessagesSquare className="w-3 h-3 mr-1" />
+                  {item._count.messages}
+                </div>
+              </CardFooter>
+            </div>
           </Link>
         </Card>
       ))}

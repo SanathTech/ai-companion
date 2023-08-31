@@ -7,12 +7,15 @@ import { usePathname, useRouter } from "next/navigation";
 
 interface SidebarProps {
   isPro: boolean;
+  companionId: string | undefined;
+  userId: string | undefined;
 }
 
-function Sidebar({ isPro }: SidebarProps) {
+function Sidebar({ isPro, companionId, userId }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const proModal = useProModal();
+  const masterId: string | undefined = process.env.USER_ID;
   const routes = [
     {
       icon: Home,
@@ -34,9 +37,16 @@ function Sidebar({ isPro }: SidebarProps) {
     },
   ];
 
-  const onNavigate = (url: string, pro: boolean) => {
+  const onNavigate = (url: string, pro: boolean, label: string) => {
     if (pro && !isPro) {
       return proModal.onOpen();
+    }
+    if (
+      label === "Create" &&
+      companionId &&
+      userId !== "user_2Uea7sTHE5XHMPMoibjEduqJP7y"
+    ) {
+      return router.push("/companion/" + companionId);
     }
     return router.push(url);
   };
@@ -46,7 +56,7 @@ function Sidebar({ isPro }: SidebarProps) {
         <div className="space-y-2">
           {routes.map((route) => (
             <div
-              onClick={() => onNavigate(route.href, route.pro)}
+              onClick={() => onNavigate(route.href, route.pro, route.label)}
               key={route.href}
               className={cn(
                 "text-muted-foreground text-xs group flex p-3 w-full justify-start font-medium cursor-pointer hover:text-primary hover:bg-primary/10 rounded-lg transition",

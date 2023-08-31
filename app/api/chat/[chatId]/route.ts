@@ -9,6 +9,13 @@ import { MemoryManager } from "@/lib/memory";
 import { rateLimit } from "@/lib/rate-limit";
 import prismadb from "@/lib/prismadb";
 
+import {
+  increaseApiLimit,
+  checkApiLimit,
+  checkApiLimitPro,
+} from "@/lib/api-limit";
+import { checkSubscription } from "@/lib/subscription";
+
 // dotenv.config({ path: `.env` });
 
 export async function POST(
@@ -28,6 +35,24 @@ export async function POST(
 
     if (!success) {
       return new NextResponse("Rate limit exceeded", { status: 429 });
+    }
+
+    const freeTrial = await checkApiLimit();
+    const proTrial = await checkApiLimitPro();
+    const isPro = await checkSubscription();
+
+    if (!freeTrial && !isPro) {
+      return new NextResponse("Free trial has expired.", {
+        status: 403,
+        statusText: "Free",
+      });
+    }
+
+    if (!proTrial) {
+      return new NextResponse("Pro trial has expired.", {
+        status: 403,
+        statusText: "Pro",
+      });
     }
 
     const companion = await prismadb.companion.update({
@@ -144,8 +169,35 @@ export async function POST(
       });
     }
 
+    await increaseApiLimit();
+
     return new StreamingTextResponse(s);
   } catch (error) {
+    return new NextResponse("Internal Error", { status: 500 });
+  }
+}
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: { chatId: string } }
+) {
+  try {
+    const user = await currentUser();
+
+    if (!user || !user.id) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
+    // Delete messages for the current companion and user
+    await prismadb.message.deleteMany({
+      where: {
+        AND: [{ userId: user.id }, { companionId: params.chatId }],
+      },
+    });
+
+    return new NextResponse("Conversation reset", { status: 200 });
+  } catch (error) {
+    console.error(error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }

@@ -8,6 +8,7 @@ import {
   MessagesSquare,
   MoreVertical,
   Trash,
+  Trash2,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import BotAvatar from "./BotAvatar";
@@ -28,9 +29,10 @@ interface ChatHeaderProps {
       messages: number;
     };
   };
+  resetConversation: () => Promise<void>;
 }
 
-function ChatHeader({ companion }: ChatHeaderProps) {
+function ChatHeader({ companion, resetConversation }: ChatHeaderProps) {
   const router = useRouter();
   const { user } = useUser();
   const { toast } = useToast();
@@ -72,27 +74,33 @@ function ChatHeader({ companion }: ChatHeaderProps) {
           </p>
         </div>
       </div>
-      {user?.id === companion.userId && (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="secondary" size="icon">
-              <MoreVertical />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="secondary" size="icon">
+            <MoreVertical />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          {user?.id === companion.userId && (
             <DropdownMenuItem
               onClick={() => router.push(`/companion/${companion.id}`)}
             >
               <Edit className="w-4 h-4 mr-2" />
               Edit
             </DropdownMenuItem>
+          )}
+          {user?.id === companion.userId && (
             <DropdownMenuItem onClick={onDelete}>
               <Trash className="w-4 h-4 mr-2" />
               Delete
             </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )}
+          )}
+          <DropdownMenuItem onClick={resetConversation}>
+            <Trash2 className="w-4 h-4 mr-2" />
+            Reset conversation
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 }

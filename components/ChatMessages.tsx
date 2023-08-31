@@ -42,10 +42,10 @@ function ChatMessages({
         role="system"
         content={`Hello, I am ${companion.name}, ${companion.description}`}
       />
-      {messages.map((message) => (
+      {messages.map((message, idx) => (
         <ChatMessage
           role={message.role}
-          key={message.content}
+          key={message.content + idx.toString()}
           content={message.content}
           src={companion.src}
         />

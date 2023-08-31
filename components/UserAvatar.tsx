@@ -4,7 +4,7 @@ import { Avatar, AvatarImage } from "./ui/avatar";
 function UserAvatar() {
   const { user } = useUser();
   return (
-    <Avatar className="h-12 w-12">
+    <Avatar className="h-10 w-10 sm:h-12 sm:w-12">
       <AvatarImage src={user?.imageUrl} />
     </Avatar>
   );
