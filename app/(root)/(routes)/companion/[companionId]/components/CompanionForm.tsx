@@ -91,7 +91,7 @@ function CompanionForm({ initialData, categories }: CompanionFormProps) {
       if (initialData) {
         // Update Companion Functionality
         await axios.patch(`/api/companion/${initialData.id}`, values);
-        await axios.delete(`/api/chat/${initialData.id}`);
+        await axios.delete(`/api/history/${initialData.id}`);
       } else {
         // Create Companion Functionality
         await axios.post("/api/companion", values);
