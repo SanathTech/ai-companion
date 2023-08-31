@@ -19,9 +19,10 @@ interface ChatClientProps {
       messages: number;
     };
   };
+  isPro: boolean;
 }
 
-function ChatClient({ companion }: ChatClientProps) {
+function ChatClient({ companion, isPro }: ChatClientProps) {
   const proModal = useProModal();
   const demoModal = useDemoModal();
   const router = useRouter();
@@ -35,11 +36,11 @@ function ChatClient({ companion }: ChatClientProps) {
       onResponse(response: Response) {
         if (response?.status === 403) {
           console.log("Chat Limit Reached.");
-          if (response?.statusText === "Free") {
+          if (!isPro) {
             console.log("Free Chat Limit Reached");
             proModal.onOpen();
           }
-          if (response?.statusText === "Pro") {
+          if (isPro) {
             console.log("Pro Chat Limit Reached");
             demoModal.onOpen();
           }
