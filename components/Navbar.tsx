@@ -18,15 +18,21 @@ const font = Poppins({
 
 interface NavbarProps {
   isPro: boolean;
+  companionId: string | undefined;
+  userId: string | undefined;
 }
 
-function Navbar({ isPro }: NavbarProps) {
+function Navbar({ isPro, companionId, userId }: NavbarProps) {
   const proModal = useProModal();
 
   return (
     <div className="fixed w-full z-50 flex justify-between items-center py-2 px-4 border-b border-primary/10 bg-secondary h-16">
       <div className="flex items-center">
-        <MobileSidebar isPro={isPro} />
+        <MobileSidebar
+          isPro={isPro}
+          companionId={companionId}
+          userId={userId}
+        />
         <Link href="/">
           <h1
             className={cn(

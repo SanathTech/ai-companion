@@ -15,7 +15,6 @@ function Sidebar({ isPro, companionId, userId }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const proModal = useProModal();
-  const masterId: string | undefined = process.env.USER_ID;
   const routes = [
     {
       icon: Home,

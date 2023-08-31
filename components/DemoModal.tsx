@@ -29,7 +29,7 @@ function DemoModal() {
         <DialogHeader className="space-y-4">
           <DialogTitle className="text-center">Chat Limit Reached!</DialogTitle>
           <DialogDescription className="text-center space-y-2">
-            <div>You've reached the chat limit for this demo.</div>
+            <div>{"You've reached the chat limit for this demo."}</div>
           </DialogDescription>
         </DialogHeader>
         <Separator />

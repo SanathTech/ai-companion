@@ -2,7 +2,7 @@ import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
 import prismadb from "@/lib/prismadb";
 import { checkSubscription } from "@/lib/subscription";
-import { auth, currentUser } from "@clerk/nextjs";
+import { currentUser } from "@clerk/nextjs";
 
 async function RootLayout({ children }: { children: React.ReactNode }) {
   const user = await currentUser();
@@ -14,7 +14,7 @@ async function RootLayout({ children }: { children: React.ReactNode }) {
   });
   return (
     <div className="h-full">
-      <Navbar isPro={isPro} />
+      <Navbar isPro={isPro} companionId={companion?.id} userId={user?.id} />
       <div className="hidden md:flex mt-16 w-20 flex-col fixed inset-y-0">
         <Sidebar isPro={isPro} companionId={companion?.id} userId={user?.id} />
       </div>

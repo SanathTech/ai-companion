@@ -34,10 +34,13 @@ function ChatClient({ companion }: ChatClientProps) {
       api: `/api/chat/${companion.id}`,
       onResponse(response: Response) {
         if (response?.status === 403) {
+          console.log("Chat Limit Reached.");
           if (response?.statusText === "Free") {
+            console.log("Free Chat Limit Reached");
             proModal.onOpen();
           }
           if (response?.statusText === "Pro") {
+            console.log("Pro Chat Limit Reached");
             demoModal.onOpen();
           }
           setMessages((current) => current.slice(0, -1));
