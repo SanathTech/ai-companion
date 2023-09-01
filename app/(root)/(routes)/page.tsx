@@ -15,7 +15,7 @@ async function RootPage({ searchParams }: RootPageProps) {
     where: {
       categoryId: searchParams.categoryId,
       name: {
-        search: searchParams.name,
+        contains: searchParams.name,
       },
     },
     orderBy: {
@@ -30,7 +30,11 @@ async function RootPage({ searchParams }: RootPageProps) {
     },
   });
 
-  const categories = await prismadb.category.findMany();
+  const categories = await prismadb.category.findMany({
+    orderBy: {
+      name: "asc",
+    },
+  });
 
   return (
     <div className="h-full p-4 space-y-2">

@@ -201,9 +201,13 @@ function CompanionForm({ initialData, categories }: CompanionFormProps) {
                         />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent>
+                    <SelectContent className="h-[calc(42vh)] overflow-y-auto">
                       {categories.map((category) => (
-                        <SelectItem key={category.id} value={category.id}>
+                        <SelectItem
+                          className="cursor-pointer"
+                          key={category.id}
+                          value={category.id}
+                        >
                           {category.name}
                         </SelectItem>
                       ))}

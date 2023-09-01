@@ -100,3 +100,25 @@ body,
     @apply bg-background text-foreground;
   }
 }
+
+/* Dark Scrollbar */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: hsl(var(--primary) / 0.1);
+  background-clip: padding-box;
+  border: 3px solid transparent;
+  border-radius: 6px;
+}
+
+/* Buttons */
+/* ::-webkit-scrollbar-button:single-button {
+  background-color: rgb(64, 64, 64);
+
+  display: none;
+  background-size: 10px;
+  background-repeat: no-repeat;
+} */

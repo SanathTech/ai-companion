@@ -23,7 +23,11 @@ async function CompanionIdPage({ params }: CompanionIdPageProps) {
     },
   });
 
-  const categories = await prismadb.category.findMany();
+  const categories = await prismadb.category.findMany({
+    orderBy: {
+      name: "asc",
+    },
+  });
 
   return (
     <div>

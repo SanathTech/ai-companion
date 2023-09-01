@@ -30,6 +30,8 @@ function ChatForm({
       className="border-t border-primary/10 py-4 flex items-center gap-x-2"
     >
       <Input
+        ref={(ref) => ref && ref.focus()}
+        onFocus={(e) => e.currentTarget.setSelectionRange(0, 0)}
         disabled={isLoading}
         value={input}
         onChange={handleInputChange}

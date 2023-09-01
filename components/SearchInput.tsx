@@ -44,7 +44,7 @@ function SearchInput() {
         onChange={onChange}
         value={value}
         placeholder="Search..."
-        className="pl-10 bg-primary/10"
+        className="pl-10 bg-primary/10 focus-visible:ring-0 focus-visible:ring-offset-0"
       />
     </div>
   );
