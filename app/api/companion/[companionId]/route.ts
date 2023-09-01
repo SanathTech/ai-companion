@@ -84,7 +84,7 @@ export async function DELETE(
 
     return NextResponse.json(companion);
   } catch (error) {
-    console.log("COMPANION_DELETE]", error);
+    console.log("[COMPANION_DELETE]", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }

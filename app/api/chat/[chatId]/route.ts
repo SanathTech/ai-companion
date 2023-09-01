@@ -184,11 +184,23 @@ export async function DELETE(
   try {
     const user = await currentUser();
 
-    if (!user || !user.id) {
+    if (!user || !user.firstName || !user.id) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    // Delete messages for the current companion and user
+    const name = params.chatId;
+
+    const companionKey = {
+      companionName: name!,
+      userId: user.id,
+      modelName: "llama2-13b",
+    };
+    const memoryManager = await MemoryManager.getInstance();
+
+    // Delete messages for the current companion and user from redis
+    await memoryManager.deleteChatHistory(companionKey);
+
+    // Delete messages for the current companion and user from Prisma
     await prismadb.message.deleteMany({
       where: {
         AND: [{ userId: user.id }, { companionId: params.chatId }],

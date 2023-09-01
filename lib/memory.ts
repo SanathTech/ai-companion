@@ -2,6 +2,7 @@ import { Redis } from "@upstash/redis";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { PineconeClient } from "@pinecone-database/pinecone";
 import { PineconeStore } from "langchain/vectorstores/pinecone";
+import { match } from "assert";
 
 export type CompanionKey = {
   companionName: string;
@@ -115,5 +116,36 @@ export class MemoryManager {
       await this.history.zadd(key, { score: counter, member: line });
       counter += 1;
     }
+  }
+
+  public async deleteChatHistory(companionKey: CompanionKey) {
+    if (!companionKey || typeof companionKey.userId == "undefined") {
+      console.log("Companion key set incorrectly");
+      return "";
+    }
+
+    const key = this.generateRedisCompanionKey(companionKey);
+
+    await this.history.del(key);
+    console.log("Chat history deleted from redis");
+  }
+
+  public async deleteCompanionHistory(companion: string) {
+    if (!companion || typeof companion == "undefined") {
+      console.log("Companion not detected");
+      return "";
+    }
+
+    const keyList = await this.history.keys(companion + "*");
+
+    console.log(keyList);
+
+    await Promise.all(
+      keyList.map(async (key) => {
+        await this.history.del(key);
+      })
+    );
+
+    console.log("All keys are deleted");
   }
 }
