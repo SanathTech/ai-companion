@@ -35,7 +35,7 @@ function ChatMessages({
   }, [messages.length]);
 
   return (
-    <div className="flex-1">
+    <div className="flex flex-col justify-end flex-1 pt-16 pb-[72px]">
       <ChatMessage
         isLoading={fakeLoading}
         src={companion.src}

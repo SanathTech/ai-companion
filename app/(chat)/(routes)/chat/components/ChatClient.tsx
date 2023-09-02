@@ -54,7 +54,6 @@ function ChatClient({ companion, isPro }: ChatClientProps) {
         };
 
         setMessages((current) => [...current, systemMessage]);
-        setInput("");
 
         router.refresh();
       },
@@ -68,6 +67,8 @@ function ChatClient({ companion, isPro }: ChatClientProps) {
 
     setMessages((current) => [...current, userMessage]);
 
+    setInput("");
+
     handleSubmit(e);
   };
 
@@ -76,6 +77,7 @@ function ChatClient({ companion, isPro }: ChatClientProps) {
       const response = await axios.delete(`/api/chat/${companion.id}`);
       if (response.status === 200) {
         setMessages([]);
+        setInput("");
       }
     } catch (error) {
       console.error("Failed to reset conversation:", error);
@@ -83,13 +85,15 @@ function ChatClient({ companion, isPro }: ChatClientProps) {
   };
 
   return (
-    <div className="flex flex-col h-full p-4 space-y-2">
+    <div className="flex flex-col h-full p-4">
+      <div className="fixed top-0 left-0 h-[76.8px] sm:h-[80.8px] w-full bg-secondary z-10" />
       <ChatHeader companion={companion} resetConversation={resetConversation} />
       <ChatMessages
         companion={companion}
         isLoading={isLoading}
         messages={messages}
       />
+      <div className="fixed bottom-0 left-0 h-[72.8px] w-full bg-secondary z-10" />
       <ChatForm
         isLoading={isLoading}
         input={input}
