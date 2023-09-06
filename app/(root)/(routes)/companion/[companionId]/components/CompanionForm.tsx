@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Wand2 } from "lucide-react";
+import { Loader2, Wand2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 
@@ -55,14 +55,11 @@ const formSchema = z.object({
   description: z.string().min(1, {
     message: "Description is required.",
   }),
-  instructions: z.string().min(200, {
-    message: "Instructions requires at least 200 characters.",
-  }),
-  seed: z.string().min(200, {
-    message: "Seed requires at least 200 characters.",
-  }),
-  src: z.string().min(1, {
-    message: "Image is required.",
+  instructions: z.string(),
+  seed: z.string(),
+  src: z.string(),
+  srcGen: z.string().min(1, {
+    message: "Category is required.",
   }),
   categoryId: z.string().min(1, {
     message: "Category is required.",
@@ -80,6 +77,7 @@ function CompanionForm({ initialData, categories }: CompanionFormProps) {
       instructions: "",
       seed: "",
       src: "",
+      srcGen: "No",
       categoryId: undefined,
     },
   });
@@ -88,10 +86,27 @@ function CompanionForm({ initialData, categories }: CompanionFormProps) {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
+      if (!values.instructions) {
+        const instructions = await axios.post(
+          "/api/chatgpt/instructions",
+          values
+        );
+        values.instructions = instructions.data;
+      }
+      if (!values.seed) {
+        const seed = await axios.post("/api/chatgpt/seed", values);
+        values.seed = seed.data;
+      }
+      // console.log(values.src);
+      if (!values.src || values.srcGen === "Yes") {
+        const image = await axios.post("/api/chatgpt/image", values);
+        console.log(image);
+        values.src = image.data;
+      }
       if (initialData) {
         // Update Companion Functionality
         await axios.patch(`/api/companion/${initialData.id}`, values);
-        await axios.delete(`/api/history/${initialData.id}`);
+        // await axios.delete(`/api/history/${initialData.id}`);
       } else {
         // Create Companion Functionality
         await axios.post("/api/companion", values);
@@ -136,6 +151,12 @@ function CompanionForm({ initialData, categories }: CompanionFormProps) {
                     value={field.value}
                   />
                 </FormControl>
+                {!initialData && (
+                  <FormDescription>
+                    If no image is provided, one will be generated for you.
+                  </FormDescription>
+                )}
+
                 <FormMessage />
               </FormItem>
             )}
@@ -185,7 +206,7 @@ function CompanionForm({ initialData, categories }: CompanionFormProps) {
               name="categoryId"
               control={form.control}
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="col-span-2 md:col-span-1">
                   <FormLabel>Category</FormLabel>
                   <Select
                     disabled={isLoading}
@@ -220,69 +241,144 @@ function CompanionForm({ initialData, categories }: CompanionFormProps) {
                 </FormItem>
               )}
             />
+            {initialData && (
+              <FormField
+                name="srcGen"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem className="col-span-2 md:col-span-1">
+                    <FormLabel>Generate New Image</FormLabel>
+                    <Select
+                      disabled={isLoading}
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="bg-background">
+                          <SelectValue
+                            defaultValue={field.value}
+                            placeholder={field.value}
+                          />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="">
+                        <SelectItem
+                          className="cursor-pointer"
+                          key="No"
+                          value="No"
+                        >
+                          No
+                        </SelectItem>
+                        <SelectItem
+                          className="cursor-pointer"
+                          key="Yes"
+                          value="Yes"
+                        >
+                          Yes
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormDescription>
+                      Generate a new image for your AI
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
           </div>
-          <div className="space-y-2 w-full">
-            <div>
-              <h3 className="text-lg font-medium">Configuration</h3>
-              <p className="text-sm text-muted-foreground">
-                Detailed instructions for AI Behaviour
-              </p>
+          {!initialData && (
+            <div className="w-full flex justify-center">
+              <Button size="lg" disabled={isLoading}>
+                {isLoading
+                  ? "Generating"
+                  : initialData
+                  ? "Edit your companion"
+                  : "Create your companion"}
+                {isLoading ? (
+                  <Loader2 className="ml-2 w-4 h-4 animate-spin" />
+                ) : (
+                  <Wand2 className="w-4 h-4 ml-2" />
+                )}
+              </Button>
             </div>
-            <Separator className="bg-primary/10" />
-          </div>
-          <FormField
-            name="instructions"
-            control={form.control}
-            render={({ field }) => (
-              <FormItem className="col-span-2 md:col-span-1">
-                <FormLabel>Instructions</FormLabel>
-                <FormControl>
-                  <Textarea
-                    className="bg-background resize-none"
-                    rows={7}
-                    disabled={isLoading}
-                    placeholder={PREAMBLE}
-                    {...field}
-                  />
-                </FormControl>
-                <FormDescription>
-                  {
-                    "Describe in detail your companion's backstory and relevant details"
-                  }
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            name="seed"
-            control={form.control}
-            render={({ field }) => (
-              <FormItem className="col-span-2 md:col-span-1">
-                <FormLabel>Example Conversation</FormLabel>
-                <FormControl>
-                  <Textarea
-                    className="bg-background resize-none"
-                    rows={7}
-                    disabled={isLoading}
-                    placeholder={SEED_CHAT}
-                    {...field}
-                  />
-                </FormControl>
-                <FormDescription>
-                  Write couple of examples of a human chatting with your AI
-                  companion, write expected answers.
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <div className="w-full flex justify-center">
-            <Button size="lg" disabled={isLoading}>
-              {initialData ? "Edit your companion" : "Create your companion"}
-              <Wand2 className="w-4 h-4 ml-2" />
-            </Button>
-          </div>
+          )}
+          {initialData && (
+            <div className="space-y-8">
+              <div className="space-y-2 w-full">
+                <div>
+                  <h3 className="text-lg font-medium">Configuration</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Leave this section blank to auto-generate instructions and
+                    example conversation.
+                  </p>
+                </div>
+                <Separator className="bg-primary/10" />
+              </div>
+              <FormField
+                name="instructions"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem className="col-span-2 md:col-span-1">
+                    <FormLabel>Instructions</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        className="bg-background resize-none"
+                        rows={7}
+                        disabled={isLoading}
+                        placeholder={PREAMBLE}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      {
+                        "Describe in detail your companion's backstory and relevant details"
+                      }
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                name="seed"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem className="col-span-2 md:col-span-1">
+                    <FormLabel>Example Conversation</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        className="bg-background resize-none"
+                        rows={7}
+                        disabled={isLoading}
+                        placeholder={SEED_CHAT}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Write couple of examples of a human chatting with your AI
+                      companion, write expected answers.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="w-full flex justify-center">
+                <Button size="lg" disabled={isLoading}>
+                  {isLoading
+                    ? "Generating"
+                    : initialData
+                    ? "Edit your companion"
+                    : "Create your companion"}
+                  {isLoading ? (
+                    <Loader2 className="ml-2 w-4 h-4 animate-spin" />
+                  ) : (
+                    <Wand2 className="w-4 h-4 ml-2" />
+                  )}
+                </Button>
+              </div>
+            </div>
+          )}
         </form>
       </Form>
     </div>

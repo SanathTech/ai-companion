@@ -1,3 +1,4 @@
+import { MemoryManager } from "@/lib/memory";
 import prismadb from "@/lib/prismadb";
 import { checkSubscription } from "@/lib/subscription";
 import { auth, currentUser } from "@clerk/nextjs";
@@ -11,7 +12,8 @@ export async function PATCH(
   try {
     const body = await req.json();
     const user = await currentUser();
-    const { src, name, description, instructions, seed, categoryId } = body;
+    const { src, srcGen, name, description, instructions, seed, categoryId } =
+      body;
 
     if (!params.companionId) {
       return new NextResponse("Companion ID is required", { status: 400 });
@@ -23,6 +25,7 @@ export async function PATCH(
 
     if (
       !src ||
+      !srcGen ||
       !name ||
       !description ||
       !instructions ||
@@ -50,6 +53,7 @@ export async function PATCH(
         userId: user.id,
         userName: user.firstName,
         src,
+        srcGen,
         name,
         description,
         instructions,
@@ -74,6 +78,11 @@ export async function DELETE(
     if (!userId) {
       return new NextResponse("Unauthorised", { status: 401 });
     }
+
+    // const memoryManager = await MemoryManager.getInstance();
+
+    // // delete all keys matching companion id from redis
+    // await memoryManager.deleteCompanionHistory(params.companionId);
 
     const companion = await prismadb.companion.delete({
       where: {
