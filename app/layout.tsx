@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/toaster";
 import ProModal from "@/components/ProModal";
 import DemoModal from "@/components/DemoModal";
+import SignedInModal from "@/components/SignedInModal";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,6 +29,7 @@ export default function RootLayout({
           <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
             <ProModal />
             <DemoModal />
+            <SignedInModal />
             {children}
             <Toaster />
           </ThemeProvider>

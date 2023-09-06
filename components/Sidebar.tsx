@@ -1,6 +1,7 @@
 "use client";
 
 import { useProModal } from "@/hooks/use-pro-modal";
+import { useSignedInModal } from "@/hooks/use-signed-in-modal";
 import { cn } from "@/lib/utils";
 import { Home, Plus, Settings } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
@@ -15,6 +16,7 @@ function Sidebar({ isPro, companionId, userId }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const proModal = useProModal();
+  const signedInModal = useSignedInModal();
   const routes = [
     {
       icon: Home,
@@ -37,6 +39,9 @@ function Sidebar({ isPro, companionId, userId }: SidebarProps) {
   ];
 
   const onNavigate = (url: string, pro: boolean, label: string) => {
+    if (!userId) {
+      return signedInModal.onOpen();
+    }
     if (pro && !isPro) {
       return proModal.onOpen();
     }
