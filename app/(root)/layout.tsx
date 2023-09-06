@@ -13,7 +13,7 @@ async function RootLayout({ children }: { children: React.ReactNode }) {
     },
   });
   return (
-    <div className="h-full">
+    <div className="h-full max-w-screen-2xl mx-auto">
       <Navbar isPro={isPro} companionId={companion?.id} userId={user?.id} />
       <div className="hidden md:flex mt-16 w-20 flex-col fixed inset-y-0">
         <Sidebar isPro={isPro} companionId={companion?.id} userId={user?.id} />
